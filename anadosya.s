@@ -57,9 +57,9 @@ FINISH_FOR_COUNT
 	MOV r10,#4       ; 4 	
 	LDR r7,=boyut    ; array size 
 
-foruc
+forucu
     CMP  R4,r7
-	BGT SON_FOR_uc
+	BGT SON_FOR_ucu
 	LDR r8,[r6,r5] ;  k=array[i];  = 2
 	MUL r8,r10,r8
  	LDR r9,[r2,r8] ; count[k]++;  count[0]++; 1 => 2  
@@ -67,8 +67,8 @@ foruc
 	STR R9,[R2,R8]  ; R2[R8]=R9
 	ADD R5,R5,#4   ;array icin
 	ADD R4,R4,#1
-	B foruc
-SON_FOR_uc	
+	B forucu
+SON_FOR_ucu	
     
 	;for (
 	;int i = 1; 
@@ -117,16 +117,32 @@ SON_FOR_dort
   MOV r5,#48          ; array illermesi icin
   MOV r8,#0          ; a    
   MOV r9,#0          ; b
+  MOV R12,#4 
  ;LDR r6,=dizi
  ; count array   ldr r2,=0x40000000
 
 forson
     CMP r4,#0       ;i >= 0
-    BGE son
+    BLT son
     LDR R8,[R6,R5] ;a= array[i] R8=R6[R5]
-	LDR R9,[R2,r8] ; b = count[a]
-	SUB R9,R9,#4   ; b = b - 1
-	
+	MOV R11,R8
+	MUL R11,R12,R11
+	LDR R9,[R2,R11] ; b = count[a]
+	MOV R11,#0      ; R11 BIR DAHA KULLANMAK ICIN SIFIRLADIM
+	SUB R9,R9,#1   ; b = b - 1
+	MOV R11,R9    
+	MUL R11,R12,R11
+	STR R8,[R1,R11] ;   output[b] = a;
+	MOV R11,#0      ; R11 BIR DAHA KULLANMAK ICIN SIFIRLADIM
+	MOV R11,R8      
+	MUL R11,R12,R11
+	LDR R10,[R2,R11]  ;count[a] 
+    SUB R10,R10,#1    ;- 1;
+	STR R10,[R2,R11]  ;count[a]
+    MOV R11,#0      ; R11 BIR DAHA KULLANMAK ICIN SIFIRLADIM
+	SUB R4,#1       ;i--
+	SUB R5,R5,#4    ;dizini indis
+	B forson
 son	
-dizi DCD 3 ,0 ,2 ,2 ,0 ,0 ,4 ,5  ,3 ,3 ,2, 2 ,4
+dizi DCD 3 ,0 ,2 ,2  ,0 ,0 ,4 ,5  ,3 ,3 ,2, 2 ,4
 	END
